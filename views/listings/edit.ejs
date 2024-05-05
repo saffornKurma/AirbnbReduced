@@ -1,0 +1,54 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+    <div class="row  mt-3">
+        <div class="col-md-8 mb-5 offset-2">
+    <form method="POST" action="/listings/<%= listingToEdit._id%>/edit?_method=PUT">
+        <div class="mb-3">
+            <label for="title">TITLE:</label>
+            <input type="text" name="title" class="form-control" value=<%= listingToEdit.title %>>
+        </div>
+        <div class="mb-3">
+            <label for="title">DESCRIPTION:</label>
+            <input type="text" name="description" class="form-control" value=<%= listingToEdit.description%>>
+        </div>
+            <div class="mb-3">
+        <div class="row">
+            <div class="col-md-8">
+            <label for="price">PRICE:</label>
+            <input type="text" name="price" class="form-control" value=<%= listingToEdit.price %>>
+        </div>
+            <div class="col-md-4">
+            <label for="location">LOCATION:</label>
+            <input type="text" name="location" class="form-control" value=<%= listingToEdit.location %>>
+        </div>
+    </div>
+</div>
+   
+       
+            <button class=" edit-btn btn btn-primary">
+                EDIT
+            </button>
+        
+    </form>
+</div>
+    </div>
+
+
+
+<!-- <form method="POST" action="/listings/<%= listingToEdit._id%>/edit?_method=PUT">
+    <p>TITLE:</p>
+    <input type="text" name="title" value=<%= listingToEdit.title %>>
+    <p>DESCRIPTION:</p>
+    <input type="text" name="description" value=<%= listingToEdit.description %>>
+    <p>PRICE:</p>
+    <input type="text" name="price" value=<%= listingToEdit.price %> >
+    <p>LOCATION:</p>
+    <input type="text" name="location" value=<%= listingToEdit.location %> >
+    <p>COUNTRY:</p>
+    <input type="text" name="country" value=<%= listingToEdit.country %>>
+   
+        <button>
+            EDIT
+        </button>
+    
+</form> -->
