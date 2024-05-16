@@ -1,6 +1,9 @@
 const  mongoose =require("mongoose");
 
 
+const Review=require("./Reviews")
+
+
 
 const ListingSchema=mongoose.Schema({
     title:
@@ -29,8 +32,22 @@ const ListingSchema=mongoose.Schema({
     country:{
         type:String,
         required:true
-    }
+    },
+    reviews:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Review"
+    }]
 })
+
+ListingSchema.post("findOneAndDelete",async (listing)=>{
+
+    console.log("POST MIDDLE WARE CALLED");
+if(listing)
+    await Review.deleteMany({_id:{$in:listing.reviews}})
+
+
+})
+
 
 
 const Listings=mongoose.model("Listings",ListingSchema);

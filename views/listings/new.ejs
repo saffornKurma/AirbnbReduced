@@ -1,29 +1,39 @@
 <% layout("/layouts/boilerplate.ejs") %>
     <div class="row offset-2 mt-3">
-        <form method="POST" action="/listings">
+        <form method="POST"   action="/listings" class="needs-validation" novalidate>
             <div class="col-md-8 mb-5">
                 <label for="title">TITLE:</label>
-                <input type="text" name="title" class="form-control">
+                <input type="text" name="title" class="form-control" required>
+                <div class="invalid-feedback">Please enter the title</div>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="col-md-8 mb-5">
                 <label for="title">DESCRIPTION:</label>
-                <input type="text" name="description" class="form-control">
+                <input type="text" name="description" class="form-control" required>
+                <div class="invalid-feedback">Please enter the description</div>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <div class="col-md-8 mb-5">
                 <div class="row">
                     <div class="col-md-8">
                         <label for="price">PRICE:</label>
-                        <input type="text" name="price" class="form-control">
+                        <input type="text" name="price" class="form-control" required>
+                        <div class="invalid-feedback">Please enter the price</div>
+                <div class="valid-feedback">Looks good!</div>
                     </div>
                     <div class="col-md-4">
                         <label for="location">LOCATION:</label>
-                    <input type="text" name="location" class="form-control">
+                    <input type="text" name="location" class="form-control" required>
+                    <div class="invalid-feedback">Please enter the location</div>
+                <div class="valid-feedback">Looks good!</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-8 mb-5">
                 <label for="title">COUNTRY:</label>
-                <input type="text" name="country" class="form-control">
+                <input type="text" name="country" class="form-control" required>
+                <div class="invalid-feedback">Please enter the country</div>
+                <div class="valid-feedback">Looks good!</div>
             </div>
             <button class="edit-btn btn btn-primary">
                 CREATE

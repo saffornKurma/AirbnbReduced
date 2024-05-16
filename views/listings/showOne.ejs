@@ -4,10 +4,10 @@
 
 <div class="row mt-3">
     <div class="col-6 offset-3">
-        <div class="card show-card" >
+        <div class="card show-card listing-card" >
+            <h1><%= onelisting.title %></h1>
             <img class="card-img-top show-img" src="<%= onelisting.image %>" alt="Card image cap">
             <div class="card-body">
-                <p>Title:<%= onelisting.title %></p>
                 <p>Description:<%= onelisting.description %></p>
                 <p>Price: &#8377;<%= onelisting.price.toLocaleString("en-IN") %></p>
                 <p>Location:<%= onelisting.location %></p>
@@ -31,6 +31,41 @@
             </button>
         </form>
     </div>
+</div>
+
+<div class="col-6 offset-3 mb-3 mt-3" >
+    <hr>
+    <h3>Please leave a review</h3>
+   
+    <form action="/listings/<%= onelisting._id %>/review" method="post" novalidate class="needs-validation">
+        <div class="mb-3 mt-3">
+        <label for="range" class="form-label">Rating(1-5)</label>
+        <input type="range" min="1" max="5" class="form-range" name="review[rating]">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea  id="" cols="30" rows="5" class="form-control" name="review[comment]" required></textarea>
+        <div class="invalid-feedback">Please add comment before submit!</div>
+        <button class="btn btn-dark mt-3">submit</button>
+    </div>
+    </form>
+<hr>
+<h3>All Reviews</h3>
+<div class="row">
+<% for(review of onelisting.reviews){ %>
+<div class="card col-5  ms-3 mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Jane Doe</h5>
+        <p class="card-text"><%= review.comment %> </p>
+        <p class="card-text"><%= review.rating %> star</p>
+    </div>
+    <form action="/listings/<%= onelisting._id %>/review/<%= review._id %>?_method=Delete" method="POST" class="mb-3 mt-3">
+    <button class="btn btn-sm btn-dark">
+        Delete
+    </button>
+</form>
+</div>
+
+<% } %>
+</div>
 </div>
 
     
