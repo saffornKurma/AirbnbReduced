@@ -89,6 +89,10 @@ app.use((req,res,next)=>{
     res.locals.success=req.flash("SUCCESS");
     res.locals.error=req.flash("ERROR");
     //THIS RES.LOCALS.SUCCESS "SUCESSS" KEYWORD WRITTEN ALONG WITH LOCALS IS USED IN INDEX
+    res.locals.currUser=req.user;
+    //HERE WE CREATE LOCALS.USER TO STORE THE USER WE GET FROM REQ
+    //WHY BECAUSE REQ.USER IS NOT ACCESSIBLE IN EJS
+    //BUT LOCALS ARE AVAILABLE
     next();
 })
 
