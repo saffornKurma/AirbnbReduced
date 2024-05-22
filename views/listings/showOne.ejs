@@ -8,6 +8,7 @@
             <h1><%= onelisting.title %></h1>
             <img class="card-img-top show-img" src="<%= onelisting.image %>" alt="Card image cap">
             <div class="card-body">
+                <p>Owned By <i><%= onelisting.owner.username %></i></p>
                 <p>Description:<%= onelisting.description %></p>
                 <p>Price: &#8377;<%= onelisting.price.toLocaleString("en-IN") %></p>
                 <p>Location:<%= onelisting.location %></p>
@@ -16,6 +17,7 @@
         </div>
     </div>
 </div>
+<% if(currUser && currUser._id.equals(onelisting.owner._id)) { %>
 <div class="col-btn offset-3">
     <div class="col-1 ">
         <form method="GET" action="/listings/<%= onelisting._id%>/edit">
@@ -32,8 +34,9 @@
         </form>
     </div>
 </div>
-
+<% } %>
 <div class="col-6 offset-3 mb-3 mt-3" >
+    <% if(currUser && !currUser._id.equals(onelisting.owner._id)){ %>
     <hr>
     <h3>Please leave a review</h3>
    
@@ -48,19 +51,22 @@
     </div>
     </form>
 <hr>
+<% } %>
 <h3>All Reviews</h3>
 <div class="row">
 <% for(review of onelisting.reviews){ %>
 <div class="card col-5  ms-3 mb-3">
     <div class="card-body">
-        <h5 class="card-title">Jane Doe</h5>
+        <h5 class="card-title">@ <i><%= review.author.username %></i> </h5>
         <p class="card-text"><%= review.comment %> </p>
         <p class="card-text"><%= review.rating %> star</p>
     </div>
     <form action="/listings/<%= onelisting._id %>/review/<%= review._id %>?_method=Delete" method="POST" class="mb-3 mt-3">
+        <% if(currUser) {%>
     <button class="btn btn-sm btn-dark">
         Delete
     </button>
+    <% } %>
 </form>
 </div>
 

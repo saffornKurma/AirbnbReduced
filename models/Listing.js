@@ -1,6 +1,6 @@
 const  mongoose =require("mongoose");
 
-
+const User=require("./User")
 const Review=require("./Reviews")
 
 
@@ -36,7 +36,12 @@ const ListingSchema=mongoose.Schema({
     reviews:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Review"
-    }]
+    }],
+    owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }
+
 })
 
 ListingSchema.post("findOneAndDelete",async (listing)=>{

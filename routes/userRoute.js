@@ -25,7 +25,7 @@ router.post("/signup", wrapAsync(async (req, res) => {
             username, email
         })
         const registeredUser = await User.register(NewUser, password);
-        console.log(registeredUser);
+        console.log("5"+registeredUser);
         //THIS REQ.LOGIN IS USED WHEN YOU SIGNED IN NOW AUTOMATICALLY
         //YOU NEED TO BE LOGGIN AND SENT TO THE APPROPRIATE PAGE
         //REQ.LOGIN IS AGAIN A PASSPORT METHOD
@@ -72,15 +72,21 @@ router.post("/login", saveRedirectUrl, passport.authenticate("local", {
         //ONE FLAW IF YOU TRY TO LOGIN FROM HOME PAGE 
         //ISLOGGEDIN MDW IS NEVER CALLED IF ITS NOT CALLED THEN ORIGINALURL IS NOT SAVED 
         //SO ALWAYS CHECK IF IT EXISTS THEN ONLY REDIRECT
-        if (res.locals.redirectUrl) {
+    //     if (res.locals.redirectUrl) {
+    //         req.flash("SUCCESS", "YOU ARE LOGGED IN!")
+    //         console.log("I AM IN LOGIN POST URL:"+res.locals.redirectUrl);
+    //         res.redirect(res.locals.redirectUrl)
+    //     }
+    //     else
+    //         return res.redirect("/Listings")
+    // }
+
             req.flash("SUCCESS", "YOU ARE LOGGED IN!")
-            res.redirect(res.locals.redirectUrl)
-        }
-        else
-            res.redirect("/Listings")
+            console.log("I AM IN LOGIN POST URL:"+res.locals.redirectUrl);
+            let redirectUrl=res.locals.redirectUrl || "/listings";
+            res.redirect(redirectUrl);
     }
 )
-
 
 //THIS ROUTE IS USE FOR LOGGINOUT THE USER
 //HERE PASSPORT GIVE A FUNCTION REQ>LOGOUT()

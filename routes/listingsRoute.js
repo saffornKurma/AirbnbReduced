@@ -6,7 +6,7 @@ const router = express.Router();
 const ListingJoiSchema = require("../schema.js")
 const ReviewJoiSchema = require("../schema.js")
 //THIS IS THE MIDDLEWARE WHICH USES REQ.ISAUTHENTICATE TO FROM PASSPORT LIB TO CHECK A USER IS LOGGED IN 
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn ,isOwner,validateListings,} = require("../middleware.js");
 
 
 
@@ -17,18 +17,6 @@ const ReviewCollection = require("../models/Reviews")
 
 
 //MDWs
-
-
-//THIS MDW IS USED FOR VALIDATION OF MESSAGES THAT IS GOING TO BE STORED IN DB
-const validateListings = (req, res, next) => {
-    const { error } = ListingJoiSchema.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error)
-    }
-    else {
-        next();
-    }
-}
 
 //create new listing
 //isLoggedIn check starting comment for this
@@ -41,8 +29,10 @@ router.get("/new", isLoggedIn, async (req, res) => {
 router.get("/:id", wrapAsync(async (req, res) => {
 
     let { id } = req.params;
-
-    const onelisting = await ListingsCollection.findById(id).populate("reviews");
+//WE ARE NESTING POPULATE WITH PATH:REVIEWS PATH LATER POPULATE AUTHOR
+//THE BELOW SAYS FOR ALL REVIEWS POPULATE AUTHOR TOO
+//OBSERVE ITS NESTED POPULATE
+    const onelisting = await ListingsCollection.findById(id).populate({path:"reviews",populate:{path:"author"},}).populate("owner");
 
     if (!onelisting) {
         req.flash("ERROR", "LISTING DOESNT EXIST/ALREADY DELETED! ");
@@ -65,7 +55,7 @@ router.get("/", wrapAsync(async (req, res) => {
 )
 
 //edit listing
-router.get("/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
+router.get("/:id/edit",isOwner, isLoggedIn, wrapAsync(async (req, res) => {
 
     let { id } = req.params;
     let listingToEdit = await ListingsCollection.findById(id);
@@ -89,8 +79,8 @@ router.post("/", isLoggedIn, wrapAsync(async (req, res) => {
 
 
     let { title, description, price, location, country } = req.body;
-
-    let response = await ListingsCollection.create({ title, description, price, location, country })
+    const owner=req.user._id;
+    let response = await ListingsCollection.create({ title, description, price, location, country ,owner})
     //let response=await ListingsCollection.create()
 
     //USING FLASHES HERE TO RPRESENT NEW LISTING ADDED,HOW DO YOU CRETE IT IS AS BELOW
@@ -103,7 +93,7 @@ router.post("/", isLoggedIn, wrapAsync(async (req, res) => {
 
 //PUT edit the listing
 //POST new
-router.put("/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
+router.put("/:id/edit",isOwner, isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
 
     let { title, description, price, location, country } = req.body;
@@ -114,19 +104,14 @@ router.put("/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
 })
 )
 //Delete a  post
-router.delete("/:id/delete", isLoggedIn, wrapAsync(async (req, res) => {
+router.delete("/:id/delete",isOwner, isLoggedIn, wrapAsync(async (req, res) => {
     let { id } = req.params;
-
     //let {title,description,price,location,country}=req.body;
-
     let response = await ListingsCollection.findByIdAndDelete(id)
-
     //USING FLASHES HERE TO RPRESENT NEW LISTING ADDED,HOW DO YOU CRETE IT IS AS BELOW
     //ITS A KEY VALUE PAIR AND YOU USE THIS KEY IN MDW RES.LOCALS SO THT WHEN RENDERED IT AUTOMATICALLY SENT
     req.flash("SUCCESS", "LISTING IS DELETED!")
     //SO WE ARE REDERING /LISTINGS THAT IS INDEX.EJS VIEWS WHERE YOU NEED TO ACCESS THE SUCCESS!
-
-
     res.redirect("/listings");
 })
 )
