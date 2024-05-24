@@ -1,6 +1,7 @@
 <% layout("/layouts/boilerplate.ejs") %>
     <div class="row offset-2 mt-3">
-        <form method="POST"   action="/listings" class="needs-validation" novalidate>
+        <!-- NOTE:enctype="multipart/form-data" is must for processing image data /upload and send to backend -->
+        <form method="POST"   action="/listings" class="needs-validation" enctype="multipart/form-data" novalidate>
             <div class="col-md-8 mb-5">
                 <label for="title">TITLE:</label>
                 <input type="text" name="title" class="form-control" required>
@@ -13,6 +14,13 @@
                 <div class="invalid-feedback">Please enter the description</div>
                 <div class="valid-feedback">Looks good!</div>
             </div>
+            <!-- NOTE:HERE TYPE IS NOW FILE SO AS TO UPLOADIMAGE -->
+            <div class="col-md-8 mb-5">
+                <label for="title">UPLOAD IMAGE:</label>
+                <input type="file" name="image" class="form-control" placeholder="CHOOSE FILE">
+                <div class="invalid-feedback">Image is Mandatory</div>
+                <div class="valid-feedback">Looks good!</div>
+            </div> 
             <div class="col-md-8 mb-5">
                 <div class="row">
                     <div class="col-md-8">
@@ -35,7 +43,7 @@
                 <div class="invalid-feedback">Please enter the country</div>
                 <div class="valid-feedback">Looks good!</div>
             </div>
-            <button class="edit-btn btn btn-primary">
+            <button class="edit-btn btn btn-primary mb-3">
                 CREATE
             </button>
         </form>

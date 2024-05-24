@@ -17,7 +17,7 @@ const ReviewJoiSchema=Joi.object({
             comment:Joi.string().required()
 
         }
-    )
+    ).required()
     })
 
 module.exports=ListingJoiSchema;

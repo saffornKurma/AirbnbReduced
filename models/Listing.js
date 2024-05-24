@@ -16,9 +16,8 @@ const ListingSchema=mongoose.Schema({
         
     },
     image:{
-        default:"https://pixabay.com/photos/woman-portrait-fashion-pink-model-8277925/",
-        type:String,
-        set:(v)=>v===""?"https://pixabay.com/photos/woman-portrait-fashion-pink-model-8277925/":v,
+        path:String,
+        filename:String,
         
     },
     price:{
