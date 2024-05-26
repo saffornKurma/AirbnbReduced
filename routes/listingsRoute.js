@@ -64,7 +64,7 @@ router
 router
 .route("/:id/edit")
 .get(isOwner, isLoggedIn, listingController.editListingRoute)
-.put(isOwner, isLoggedIn,listingController.editListingPutRoute)
+.put(isOwner, isLoggedIn,upload.single("image"),listingController.editListingPutRoute)
 
 //show one listing api
 //router.get("/:id", listingController.showOneListing)

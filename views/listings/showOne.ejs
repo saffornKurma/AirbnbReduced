@@ -1,4 +1,11 @@
+
 <% layout("/layouts/boilerplate.ejs") %>
+<!-- THIS SCRIPT IS USED SO THAT MAP.JS GETS THE PROCESS.ENV FILES  -->
+<script>
+ let mapBoxToken=`<%= process.env.MAPBOX_API_KEY %>`;
+ let listing= <%-JSON.stringify(onelisting)%>
+</script>
+
 <div class="row mt-3">
     <div class="col-6 offset-3">
         <div class="card show-card listing-card" >
@@ -61,10 +68,11 @@
     </form>
 <hr>
 <% } %>
+<% if(onelisting.reviews.length > 0) {%>
 <h3>All Reviews</h3>
 <div class="row">
 <% for(review of onelisting.reviews){ %>
-<div class="card col-5  ms-3 mb-3">
+<div class="card col-5  ms-3 mb-3" >
     <div class="card-body">
         <h5 class="card-title">@ <i><%= review.author.username %></i> </h5>
        
@@ -79,11 +87,28 @@
     </button>
     <% } %>
 </form>
-</div>
+
 
 <% } %>
+<% } %>
+<hr>
+<div class="col-6 mb-3 mt-3" >
+    <h3>Where you 'll be here</h3>
+<div id='map' style='width: 95vh; height: 400px;'></div>
 </div>
 </div>
+
+</div>
+</div>
+
+<!-- EJS-> ABOVE SCRIPT STORES THE STORES INFO[mapBoxToken] LATER ->BELOW SCRIPT IS CALLED AND IT USES MAP_TOKEN -->
+<script src="/js/map.js">
+   </script>
+
+
+
+
+    
 
     
 

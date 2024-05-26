@@ -2,7 +2,7 @@
 
     <div class="row  mt-3">
         <div class="col-md-8 mb-5 offset-2">
-    <form method="POST" action="/listings/<%= listingToEdit._id%>/edit?_method=PUT">
+    <form method="POST" action="/listings/<%= listingToEdit._id%>/edit?_method=PUT" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title">TITLE:</label>
             <input type="text" name="title" class="form-control" value=<%= listingToEdit.title %>>
@@ -10,6 +10,13 @@
         <div class="mb-3">
             <label for="title">DESCRIPTION:</label>
             <input type="text" name="description" class="form-control" value=<%= listingToEdit.description%>>
+        </div>
+        <!-- NOTE:HERE TYPE IS NOW FILE SO AS TO UPLOADIMAGE -->
+        <div class="mb-3">
+            <label for="title">UPLOAD IMAGE:</label>
+            <input type="file" name="image" class="form-control" placeholder="CHOOSE FILE" required>
+            <div class="invalid-feedback">Image is Mandatory</div>
+            <div class="valid-feedback">Looks good!</div>
         </div>
             <div class="mb-3">
         <div class="row">
