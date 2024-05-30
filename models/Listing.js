@@ -1,6 +1,6 @@
 const  mongoose =require("mongoose");
 
-
+const User=require("./User")
 const Review=require("./Reviews")
 
 
@@ -16,9 +16,8 @@ const ListingSchema=mongoose.Schema({
         
     },
     image:{
-        default:"https://pixabay.com/photos/woman-portrait-fashion-pink-model-8277925/",
-        type:String,
-        set:(v)=>v===""?"https://pixabay.com/photos/woman-portrait-fashion-pink-model-8277925/":v,
+        path:String,
+        filename:String,
         
     },
     price:{
@@ -36,7 +35,23 @@ const ListingSchema=mongoose.Schema({
     reviews:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Review"
-    }]
+    }],
+    owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    geometry: {
+        type: {
+          type: String, // Don't do `{ location: { type: String } }`
+          enum: ['Point'], // 'location.type' must be 'Point'
+          required: true
+        },
+        coordinates: {
+          type: [Number],
+          required: true
+        }
+      },
+
 })
 
 ListingSchema.post("findOneAndDelete",async (listing)=>{

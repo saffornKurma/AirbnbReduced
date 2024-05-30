@@ -1,134 +1,95 @@
+//THIS IS THE CLAUSE FOR
+//KNOWING WHICH ENV CURRENTLY WE ARE WORKING ON
+//IF ITS" "PRODUCTION" THE DONT USE .ENV
+if(process.env.NODE_ENV != "production"){
+    require("dotenv").config();
+}
+
+
 const express = require("express");
 const wrapAsync = require("../utils/wrapAsync")
 const ExpressError = require("../utils/expressError")
 const router = express.Router();
-//JOI Validation
-const ListingJoiSchema = require("../schema.js")
-const ReviewJoiSchema = require("../schema.js")
+
+const storage=require("../cloudinary.js")
+
+//THIS IS LIBRARY CALLED MULTER
+//SPECFICALLY USED TO PROCESS MULTI DATA OR FORM DATA SENT IN IN FORM WITH TYPE FILE AND IMAGES
+//FOR TESTING WE MAKE IT TO STORE UPLAOD TO TO FOLDER UPLOAD
+//BUT LATER WE WILL TRY TO UPLOAD TO CLOUD STORE
+const multer=require('multer')
+//const upload=multer({dest:'uploads/'})
+//FOR TESTING WE WILL CREATE A POST CALL CHECK THE COMMENT TEST_IMAGE TAG BELOW
+
+//STORING USING THE MULTER STORAGE
+const upload=multer({storage});
+
+//SAMPLE DATA RES
+// {
+//     "fieldname": "image",
+//     "originalname": "cabin-3374201_1280.jpg",
+//     "encoding": "7bit",
+//     "mimetype": "image/jpeg",
+//     "path": "https://res.cloudinary.com/dr5owrv1x/image/upload/v1716574529/Wanderlust/jnbf0lqqvvnrijyduoka.jpg",
+//     "size": 243226,
+//     "filename": "Wanderlust/jnbf0lqqvvnrijyduoka"
+// }
+
+//const dotenv=require("dotenv")
+
 //THIS IS THE MIDDLEWARE WHICH USES REQ.ISAUTHENTICATE TO FROM PASSPORT LIB TO CHECK A USER IS LOGGED IN 
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn ,isOwner,validateListings,} = require("../middleware.js");
+//WE ARE FOLLOWING MVC PATTERN SO THIS CONTROLLER HAS ALL THE ROUTES
+const listingController=require("../controllers/listingController")
+
+
+//WE ARE USING ROUTER>ROUTE A COMBIE WAY OF WRITING THE APIS
+//BASICALLY IT WORKS ON THE BASIS OF CHAINING TOGETHER COMMON ROUTE
+//USE-ROUTER.ROUTE("/").get
 
 
 
-
-const ListingsCollection = require("../models/Listing");
-const ReviewCollection = require("../models/Reviews")
-
-
-
-//MDWs
-
-
-//THIS MDW IS USED FOR VALIDATION OF MESSAGES THAT IS GOING TO BE STORED IN DB
-const validateListings = (req, res, next) => {
-    const { error } = ListingJoiSchema.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error)
-    }
-    else {
-        next();
-    }
-}
-
+//---------------------all listing api------------------------
+//HERE COMMON PATH IS "/" USED BY GET ALSO POST//U CAN USE THE SAME IN REVIEW AS WELL
+//USING CONTROLLERS 
+//router
 //create new listing
 //isLoggedIn check starting comment for this
-router.get("/new", isLoggedIn, async (req, res) => {
+router.get("/new", isLoggedIn,listingController.newRoute )
 
-    res.render("listings/new.ejs");
-})
+router
+.route("/:id")
+.get( listingController.showOneListing)
 
-//one listing api
-router.get("/:id", wrapAsync(async (req, res) => {
+router
+.route("/:id/edit")
+.get(isOwner, isLoggedIn, listingController.editListingRoute)
+.put(isOwner, isLoggedIn,upload.single("image"),listingController.editListingPutRoute)
 
-    let { id } = req.params;
-
-    const onelisting = await ListingsCollection.findById(id).populate("reviews");
-
-    if (!onelisting) {
-        req.flash("ERROR", "LISTING DOESNT EXIST/ALREADY DELETED! ");
-        res.redirect("/listings");
-        return;
-    }
-
-    res.render("listings/showOne.ejs", { onelisting });
-
-})
-
-)
-//all listing api
-router.get("/", wrapAsync(async (req, res) => {
-    console.log("I AM LISTING ALL");
-    const allListings = await ListingsCollection.find({});
-
-    res.render("listings/index.ejs", { allListings });
-})
-)
-
+//show one listing api
+//router.get("/:id", listingController.showOneListing)
 //edit listing
-router.get("/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
-
-    let { id } = req.params;
-    let listingToEdit = await ListingsCollection.findById(id);
-    if (!listingToEdit) {
-        req.flash("ERROR", "LISTING DOESNT EXIST/ALREADY DELETED! ");
-        res.redirect("/listings");
-        return;
-    }
-
-    //USING FLASHES HERE TO RPRESENT NEW LISTING ADDED,HOW DO YOU CRETE IT IS AS BELOW
-    //ITS A KEY VALUE PAIR AND YOU USE THIS KEY IN MDW RES.LOCALS SO THT WHEN RENDERED IT AUTOMATICALLY SENT
-
-    req.flash("SUCCESS", "LISTING IS EDITTED!");
-    //SO WE ARE REDERING /LISTINGS THAT IS INDEX.EJS VIEWS WHERE YOU NEED TO ACCESS THE SUCCESS!
-    res.render("listings/edit.ejs", { listingToEdit });
-})
-)
-
+//router.get("/:id/edit",isOwner, isLoggedIn, listingController.editListingRoute);
 //POST new
-router.post("/", isLoggedIn, wrapAsync(async (req, res) => {
-
-
-    let { title, description, price, location, country } = req.body;
-
-    let response = await ListingsCollection.create({ title, description, price, location, country })
-    //let response=await ListingsCollection.create()
-
-    //USING FLASHES HERE TO RPRESENT NEW LISTING ADDED,HOW DO YOU CRETE IT IS AS BELOW
-    //ITS A KEY VALUE PAIR AND YOU USE THIS KEY IN MDW RES.LOCALS SO THT WHEN RENDERED IT AUTOMATICALLY SENT
-    req.flash("SUCCESS", "NEW LISTING IS ADDED!")
-    //SO WE ARE REDERING /LISTINGS THAT IS INDEX.EJS VIEWS WHERE YOU NEED TO ACCESS THE SUCCESS!
-    res.redirect("/listings");
-})
-)
-
+//router.post("/", isLoggedIn,listingController.newListingRoute)
 //PUT edit the listing
 //POST new
-router.put("/:id/edit", isLoggedIn, wrapAsync(async (req, res) => {
-    let { id } = req.params;
+//router.put("/:id/edit",isOwner, isLoggedIn,listingController.editListingPutRoute)
+//Delete Listing
+router.delete("/:id/delete",isOwner, isLoggedIn,listingController.deleteRouteListings)
 
-    let { title, description, price, location, country } = req.body;
-
-    let response = await ListingsCollection.findByIdAndUpdate(id, { title, description, price, location, country })
-
-    res.redirect("/listings");
-})
-)
-//Delete a  post
-router.delete("/:id/delete", isLoggedIn, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-
-    //let {title,description,price,location,country}=req.body;
-
-    let response = await ListingsCollection.findByIdAndDelete(id)
-
-    //USING FLASHES HERE TO RPRESENT NEW LISTING ADDED,HOW DO YOU CRETE IT IS AS BELOW
-    //ITS A KEY VALUE PAIR AND YOU USE THIS KEY IN MDW RES.LOCALS SO THT WHEN RENDERED IT AUTOMATICALLY SENT
-    req.flash("SUCCESS", "LISTING IS DELETED!")
-    //SO WE ARE REDERING /LISTINGS THAT IS INDEX.EJS VIEWS WHERE YOU NEED TO ACCESS THE SUCCESS!
+router
+.route("/")
+.get( listingController.indexRoute)
+.post( isLoggedIn,upload.single("image"),listingController.newListingRoute)
+//upload is a middlewere
+//TEST_IMAGE:IS THE POST CALL WHERE WE USE UPLOAD FUNCTION FROM MULTER IN ORDER TO STORE FILE IN UPLOAD AS IT IS 
+//SINGLE IMAGE CHOOSEN SO USE SINGLE WE CAN ALSO USE MULTI FOR MANY FILES
+// .post(upload.single("image"),(req,res)=>{
+//     res.send(req.file)
+// })
 
 
-    res.redirect("/listings");
-})
-)
+
 
 module.exports = router;

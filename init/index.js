@@ -20,7 +20,11 @@ const initDB=async ()=>{
 
     await ListingsCollection.deleteMany({});
 
-    const res=await ListingsCollection.insertMany(Listings.data);
+    let ListingsData=Listings.data;
+//OTER PARANTHESIS IS REQUIRED IN ORDER TO SAY JS THAT OBJECT CREATION IS NOT A BLOCK OF CODE
+ListingsData=ListingsData.map((listData)=>({...listData,owner:"664b69281632fc6409591e6b"}));
+
+    const res=await ListingsCollection.insertMany(ListingsData);
     if(res)
     {
         console.log("Data inserted");
