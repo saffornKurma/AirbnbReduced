@@ -6,14 +6,19 @@ const methodOverride=require("method-override")
 const ejsMate=require("ejs-mate");
 const ExpressError=require("./utils/expressError")
 const session=require("express-session");
+//for cloud seesion mngo store
+const MongoStore = require('connect-mongo');
 const flash=require("connect-flash");//THIS IS USED TO CREATE FLASH MESSAGES THAT APPERAR ONCE AND DISAPPEARS//NOTE THIS NEEDS SESSION FIRST!
-
+require("dotenv").config();
 //PASSPORT IS USED TO AUTHENTICATE
 //THERE ARE NUMEROUS WAYS TO AUTHENTICATE PASSPORT LOCAL USES LOCAL SEESION STORAGE TO STORE DATA
 const passport=require("passport");
 const LocalPassportStrategy=require("passport-local");
 const User=require("./models/User");
 
+
+dbUrl=process.env.MONGO_ATLAS_DB_URL;
+console.log("dbUrl is--"+dbUrl);
 
 
 
@@ -31,9 +36,24 @@ app.use(express.static(path.join(__dirname,"/public")))
 app.use(express.urlencoded({extended:true}))
 app.use(methodOverride("_method"));
 
+//THIS IS OPTION FOR MONGO SESSION WHEN DEPLOYING IN CLOUD
+const store=MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto:{
+        secret:process.env.SECRET,
+    } // See below for details
+    ,
+    touchAfter:24*3600//dureation of data to be stored in seesion like user details etc
+  });
+//JUST IF SESSION IS NOT CREATED
+  store.on("error",()=>{
+    console.log("ERROR in MONGO SEESION STORE",err);
+  })
+
 //SESSION OPTIONS IN ORDER TO USE FLASHES
 const sessionOptions={
-    secret:"mysecretcode",
+    store:store,
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie:{//THIS COOKIE IS EXPIRE DATE FROM BROWSER
@@ -105,7 +125,7 @@ app.use("/",userRoute)
 
 
 //MONGO DB CONNECTION
-const main=async ()=>await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
+const main=async ()=>await mongoose.connect(dbUrl);
 main().then(()=>{
     console.log(`DB connection success`);
 }).catch(err=>{

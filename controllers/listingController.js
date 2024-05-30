@@ -4,6 +4,7 @@ const ExpressError = require("../utils/expressError")
 
 const ListingsCollection = require("../models/Listing");
 
+
 const mapBoxAccessToken=process.env.MAPBOX_API_KEY;
 
 const mbxGeocoding=require("@mapbox/mapbox-sdk/services/geocoding");
